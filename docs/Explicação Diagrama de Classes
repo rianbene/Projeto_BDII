@@ -1,5 +1,3 @@
-Segue uma proposta de **diagrama de classes UML** para o domínio **Rede de Farmácias**, tendo a **venda de medicamentos** como operação central do modelo.
-
 ## Decisões com base na regra de negócio
 
 ### 1. Uso de generalização entre `Pessoa`, `Cliente` e `Funcionario`
