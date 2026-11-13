@@ -1,0 +1,1 @@
+## Para visualizar o diagrama de classes com maior nitidez, adicione a extensão bierner.markdown-mermaid no VSCode ou abra o código em um visualizador online de mermaid
