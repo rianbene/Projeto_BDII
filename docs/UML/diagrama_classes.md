@@ -137,4 +137,3 @@ classDiagram
     Venda "1" *-- "1" Pagamento : possui
     Pagamento "1" --> "1" FormaPagamento : utiliza
     Venda "1" --> "1" StatusVenda : possuiStatus
-:::
