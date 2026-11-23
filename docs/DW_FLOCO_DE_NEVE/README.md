@@ -8,8 +8,8 @@ mais junções nas consultas.
 ## Como foi implementado
 Mesmo **fato, granularidade e medidas** do modelo estrela — apenas as dimensões mudam de forma.
 
-- **Esquema:** `dw` | **Granularidade:** 1 item vendido por venda.
-- **Fato:** `dw.fato_venda` (idêntica à do estrela: `quantidade`, `valor_bruto`, `desconto`, `valor_liquido`).
+- **Esquema:** `dw_floco_neve` | **Granularidade:** 1 item vendido por venda.
+- **Fato:** `dw_floco_neve.fato_venda`, com as mesmas medidas do estrela.
 - **Dimensões normalizadas (2):**
   - **Produto → Categoria → Departamento**
     `dim_produto.sk_categoria → dim_categoria.sk_departamento → dim_departamento`
@@ -19,8 +19,7 @@ Mesmo **fato, granularidade e medidas** do modelo estrela — apenas as dimensõ
 - **Atributos migrados:** `categoria`/`fabricante` saem de `dim_produto`; `cidade`/`estado` saem de `dim_loja`.
 - **Chaves:** `sk_*` substitutas em todos os níveis; `id_origem` preservado em `dim_produto` e `dim_loja`.
 
-> Observação: os dois modelos são alternativas para o **mesmo assunto** (venda de medicamentos).
-> Para execução simultânea, use esquemas distintos (`dw` e `dw_snowflake`) ou recrie o `dw` antes de cada carga.
+Os dois modelos representam o mesmo assunto e são carregados simultaneamente em `dw_estrela` e `dw_floco_neve`. A instalação do ETL acrescenta rastreabilidade por item e SCD Tipo 2 no cliente. [Execução do ETL](../../data_warehouse/README.md)
 
 ## Arquivos
 - `ddl_floco_de_neve.sql` — criação do esquema, tabelas hierárquicas e índices.
@@ -34,10 +33,10 @@ psql -U <usuario> -d <banco> -f ddl_floco_de_neve.sql
 ## Consulta de validação (drill-down geográfico)
 ```sql
 SELECT e.sigla AS estado, c.nome AS cidade, SUM(f.valor_liquido) AS faturamento
-FROM dw.fato_venda f
-JOIN dw.dim_loja   l ON l.sk_loja   = f.sk_loja
-JOIN dw.dim_cidade c ON c.sk_cidade = l.sk_cidade
-JOIN dw.dim_estado e ON e.sk_estado = c.sk_estado
+FROM dw_floco_neve.vendas_concluidas f
+JOIN dw_floco_neve.dim_loja   l ON l.sk_loja   = f.sk_loja
+JOIN dw_floco_neve.dim_cidade c ON c.sk_cidade = l.sk_cidade
+JOIN dw_floco_neve.dim_estado e ON e.sk_estado = c.sk_estado
 GROUP BY e.sigla, c.nome
 ORDER BY e.sigla, faturamento DESC;
 ```
